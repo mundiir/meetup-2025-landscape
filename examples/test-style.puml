@@ -1,0 +1,14 @@
+@startuml
+
+!include ../styles/style.puml
+
+title "Ultra-minimal style demo"
+
+rectangle "Rect A" as A
+rectangle "Rect B" as B
+A --> B : link
+
+note right of B
+  Text
+end note
+@enduml

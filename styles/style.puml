@@ -1,0 +1,10 @@
+@startuml
+skinparam roundCorner 12
+skinparam defaultFontName "Serif"
+
+skinparam note {
+  BackgroundColor #EADBB8
+  FontColor #2E2E2E
+  BorderColor #D5C4A1
+}
+@enduml

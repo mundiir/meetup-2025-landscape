@@ -17,38 +17,22 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout landscape repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Rewrite cross-repo links in C4 containers (to GitHub Pages URLs)
-        working-directory: c4
-        env:
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          sed -i "s#../../meetup-2025-orders-service/docs/c4/component.svg#https://$OWNER.github.io/meetup-2025-orders-service/component.svg#g" c4-containers.puml
-          sed -i "s#../../meetup-2025-payment-service/docs/c4/component.svg#https://$OWNER.github.io/meetup-2025-payment-service/component.svg#g" c4-containers.puml
-          sed -i "s#../../meetup-2025-delivery-service/docs/c4/component.svg#https://$OWNER.github.io/meetup-2025-delivery-service/component.svg#g" c4-containers.puml
-
-      - name: Install PlantUML
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y plantuml graphviz
-
-      - name: Generate diagrams
-        run: |
-          bash c4/generate.sh
+      - name: Process diagrams
+        uses: Timmy/plantuml-action@v1
+        with:
+          args: '-tsvg c4/*.puml'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: c4
 

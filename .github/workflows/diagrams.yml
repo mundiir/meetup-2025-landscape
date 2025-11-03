@@ -23,34 +23,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout orders service
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/meetup-2025-orders-service
-          path: meetup-2025-orders-service
-
-      - name: Checkout payment service
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/meetup-2025-payment-service
-          path: meetup-2025-payment-service
-
-      - name: Checkout delivery service
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/meetup-2025-delivery-service
-          path: meetup-2025-delivery-service
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Install PlantUML, Graphviz, and JRE
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y plantuml graphviz default-jre-headless
-
       - name: Rewrite cross-repo links in C4 containers (to GitHub Pages URLs)
         working-directory: meetup-2025-landscape/c4
         env:
@@ -60,48 +32,10 @@ jobs:
           sed -i "s#../../meetup-2025-payment-service/docs/c4/component.svg#https://$OWNER.github.io/meetup-2025-payment-service/component.svg#g" c4-containers.puml
           sed -i "s#../../meetup-2025-delivery-service/docs/c4/component.svg#https://$OWNER.github.io/meetup-2025-delivery-service/component.svg#g" c4-containers.puml
 
-      - name: Generate code-level PUML (C4) for services
-        working-directory: meetup-2025-landscape/c4
-        run: php ./generate.php
-
-      - name: Rewrite links in generated C4 code diagrams
-        working-directory: meetup-2025-landscape/c4
-        env:
-          OWNER: ${{ github.repository_owner }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          for svc in orders payment delivery; do
-            puml="c4-code-$svc.puml"
-            if [ -f "$puml" ]; then
-              case "$svc" in
-                orders)
-                  c3="https://$OWNER.github.io/meetup-2025-orders-service/component.svg"
-                  srcPrefix="https://github.com/$OWNER/meetup-2025-orders-service/blob/$BRANCH/src/"
-                  ;;
-                payment)
-                  c3="https://$OWNER.github.io/meetup-2025-payment-service/component.svg"
-                  srcPrefix="https://github.com/$OWNER/meetup-2025-payment-service/blob/$BRANCH/src/"
-                  ;;
-                delivery)
-                  c3="https://$OWNER.github.io/meetup-2025-delivery-service/component.svg"
-                  srcPrefix="https://github.com/$OWNER/meetup-2025-delivery-service/blob/$BRANCH/src/"
-                  ;;
-              esac
-              sed -i "s#c3-components-$svc.svg#$c3#g" "$puml"
-              sed -i "s#c2-containers.svg#c4-containers.svg#g" "$puml"
-              sed -i "s#c1-system-context.svg#c4-system-context.svg#g" "$puml"
-              # Rewrite source links
-              sed -i "s#\./\./meetup-2025-$svc-service/src/#$srcPrefix#g" "$puml"
-              sed -i "s#\./\../meetup-2025-$svc-service/src/#$srcPrefix#g" "$puml"
-              sed -i "s#\../meetup-2025-$svc-service/src/#$srcPrefix#g" "$puml"
-              sed -i "s#\./meetup-2025-$svc-service/src/#$srcPrefix#g" "$puml"
-              sed -i "s#\.?\.\./meetup-2025-$svc-service/src/#$srcPrefix#g" "$puml"
-            fi
-          done
-
-      - name: Render PlantUML to SVG
-        working-directory: meetup-2025-landscape/c4
-        run: plantuml -tsvg ./*.puml
+      - name: Process diagrams
+        uses: Timmy/plantuml-action@v1
+        with:
+          args: '-tsvg c4/*.puml'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

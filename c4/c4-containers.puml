@@ -11,12 +11,12 @@ Person(customer, "Customer", "Browses and buys products", $link="c4-system-conte
 System_Boundary(shop, "Online Shop") {
   Container(ui, "Web UI", "Browser SPA", "Customer-facing UI")
 
-  Container(orderService, "Orders Service", "PHP", "Order management", $link="../../meetup-2025-orders-service/docs/c4/component.svg", $tags="microService")
+  Container(orderService, "Orders Service", "PHP", "Order management", $link="https://mundiir.github.io/meetup-2025-orders-service/component.svg", $tags="microService")
   ContainerDb(ordersDb, "Orders DB", "SQLite", "Stores orders")
 
-  Container(paymentService, "Payment Service", "PHP", "Payments", $link="../../meetup-2025-payment-service/docs/c4/component.svg", $tags="microService")
+  Container(paymentService, "Payment Service", "PHP", "Payments", $link="https://mundiir.github.io/meetup-2025-payment-service/component.svg", $tags="microService")
 
-  Container(deliveryService, "Delivery Service", "PHP", "Delivery & shipping", $link="../../meetup-2025-delivery-service/docs/c4/component.svg", $tags="microService")
+  Container(deliveryService, "Delivery Service", "PHP", "Delivery & shipping", $link="https://mundiir.github.io/meetup-2025-delivery-service/component.svg", $tags="microService")
   ContainerDb(deliveryDb, "Deliveries DB", "SQLite", "Stores deliveries")
 }
 

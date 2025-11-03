@@ -1,0 +1,26 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_TOP_DOWN()
+
+' People
+Person(customer, "Customer", "Browses and buys products")
+
+' Our system (abstract online shop, no internal details here)
+System(shop, "Online Shop", "E-commerce platform", $link="c4-containers.svg")
+
+' High-level relationships
+Rel(customer, shop, "Uses")
+
+' External systems
+System_Ext(third_party, "3rd-Party Payments", "External payment provider")
+System_Ext(carrier, "Carrier Platform", "External shipping carrier")
+
+' Relationships to external systems
+Rel(shop, third_party, "Processes payments")
+Rel(shop, carrier, "Ships orders")
+
+SHOW_LEGEND()
+
+footer [[c4-containers.svg Go to C2 (Containers)]]
+@enduml

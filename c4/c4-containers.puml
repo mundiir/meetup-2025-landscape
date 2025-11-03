@@ -1,0 +1,47 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddElementTag("microService", $shape=EightSidedShape(), $bgColor="CornflowerBlue", $fontColor="white", $legendText="microservice")
+
+LAYOUT_LEFT_RIGHT()
+
+' Person to keep C1 context visible at C2
+Person(customer, "Customer", "Browses and buys products", $link="c4-system-context.svg")
+
+System_Boundary(shop, "Online Shop") {
+  Container(ui, "Web UI", "Browser SPA", "Customer-facing UI")
+
+  Container(orderService, "Orders Service", "PHP", "Order management", $link="../../meetup-2025-orders-service/docs/c4/component.svg", $tags="microService")
+  ContainerDb(ordersDb, "Orders DB", "SQLite", "Stores orders")
+
+  Container(paymentService, "Payment Service", "PHP", "Payments", $link="../../meetup-2025-payment-service/docs/c4/component.svg", $tags="microService")
+
+  Container(deliveryService, "Delivery Service", "PHP", "Delivery & shipping", $link="../../meetup-2025-delivery-service/docs/c4/component.svg", $tags="microService")
+  ContainerDb(deliveryDb, "Deliveries DB", "SQLite", "Stores deliveries")
+}
+
+' Data store relation
+Rel(orderService, ordersDb, "Reads/Writes")
+Rel(deliveryService, deliveryDb, "Reads/Writes")
+
+' External systems
+System_Ext(third_party, "3rd-Party Payments", "External payment provider")
+System_Ext(carrier, "Carrier Platform", "External shipping carrier")
+
+' Person and UI flow
+Rel(customer, ui, "Uses")
+Rel(ui, orderService, "HTTP")
+
+' Cross-service relations
+Rel(orderService, paymentService, "Calls payment API for charge", "HTTP/REST")
+Rel(orderService, deliveryService, "Requests delivery", "HTTP/REST")
+
+' Relationships to external systems
+Rel(deliveryService, carrier, "HTTP")
+Rel(paymentService, third_party, "HTTP")
+
+
+SHOW_LEGEND()
+
+footer [[c4-system-context.svg Back to SystemContext]] | [[../../meetup-2025-orders-service/docs/c4/component.svg Orders Component]] | [[../../meetup-2025-payment-service/docs/c4/component.svg Payment Component]] | [[../../meetup-2025-delivery-service/docs/c4/component.svg Delivery Component]]
+@enduml
